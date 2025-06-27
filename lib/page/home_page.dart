@@ -1,8 +1,45 @@
 import 'package:dj_catch/page/game_page.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int? _highScore;
+  String? _highScoreUser;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchHighScore();
+  }
+
+  Future<void> _fetchHighScore() async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('highscores')
+          .doc('global')
+          .get();
+      final data = doc.data();
+      setState(() {
+        _highScore = data != null ? data['score'] ?? 0 : 0;
+        _highScoreUser = data != null ? data['username'] ?? '' : '';
+        _loading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _highScore = null;
+        _highScoreUser = null;
+        _loading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +82,36 @@ class HomePage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
+
+              // ハイスコア表示
+              Padding(
+                padding: const EdgeInsets.only(top: 24, bottom: 16),
+                child: _loading
+                    ? const CircularProgressIndicator()
+                    : Column(
+                        children: [
+                          const Text(
+                            '現在のオンライン記録',
+                            style: TextStyle(
+                              color: Colors.amber,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 2,
+                            ),
+                          ),
+                          Text(
+                            _highScore != null
+                                ? '${_highScore!}（${_highScoreUser ?? ''}）'
+                                : '取得できません',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+              ),
 
               // const Text(
               //   'GAME',
