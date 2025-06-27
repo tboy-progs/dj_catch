@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "435117422124",
+    "project_id": "dj-catch-7d079",
+    "storage_bucket": "dj-catch-7d079.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:435117422124:android:be1d8cf5a83c2163900389",
+        "android_client_info": {
+          "package_name": "com.example.dj_catch"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1ylpbhZNm5leS-vqYwdp4tMp9TRWN2cg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

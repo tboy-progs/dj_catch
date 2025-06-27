@@ -21,17 +21,11 @@ class DefaultFirebaseOptions {
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for android - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return android;
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -65,6 +59,23 @@ class DefaultFirebaseOptions {
     projectId: 'dj-catch-7d079',
     storageBucket: 'dj-catch-7d079.firebasestorage.app',
     iosBundleId: 'com.example.djCatch',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyClbC126TJpHkfY70ZG99KQHZfM5qsF50o',
+    appId: '1:435117422124:ios:0f9f39c0bf6ae512900389',
+    messagingSenderId: '435117422124',
+    projectId: 'dj-catch-7d079',
+    storageBucket: 'dj-catch-7d079.firebasestorage.app',
+    iosBundleId: 'com.example.djCatch',
+  );
+
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyA1ylpbhZNm5leS-vqYwdp4tMp9TRWN2cg',
+    appId: '1:435117422124:android:be1d8cf5a83c2163900389',
+    messagingSenderId: '435117422124',
+    projectId: 'dj-catch-7d079',
+    storageBucket: 'dj-catch-7d079.firebasestorage.app',
   );
 
 }

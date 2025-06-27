@@ -1,12 +1,84 @@
 import 'package:dj_catch/page/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ResultPage extends StatelessWidget {
   final int score;
   const ResultPage({super.key, required this.score});
 
+  Future<Map<String, dynamic>?> fetchHighScore() async {
+    final doc = await FirebaseFirestore.instance
+        .collection('highscores')
+        .doc('V31RnAACew0KnE6tG9Ms')
+        .get();
+    return doc.data();
+  }
+
+  Future<void> updateHighScore(String username, int newScore) async {
+    await FirebaseFirestore.instance.collection('highscores').doc('global').set(
+      {'username': username, 'score': newScore},
+    );
+  }
+
+  void showScoreDialog(BuildContext context) async {
+    final highScoreData = await fetchHighScore();
+    final int highScore = highScoreData != null
+        ? highScoreData['score'] ?? 0
+        : 0;
+    final String highScoreUser = highScoreData != null
+        ? highScoreData['username'] ?? ''
+        : '';
+    final TextEditingController nameController = TextEditingController();
+    bool isNewRecord = score > highScore;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('スコア結果'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('ハイスコア: $highScore ($highScoreUser)'),
+              Text('今回のスコア: $score'),
+              if (isNewRecord) ...[
+                const SizedBox(height: 16),
+                const Text('新記録！ユーザー名を入力してください'),
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(labelText: 'ユーザー名'),
+                ),
+              ],
+            ],
+          ),
+          actions: [
+            if (isNewRecord)
+              TextButton(
+                onPressed: () async {
+                  final username = nameController.text.trim();
+                  if (username.isNotEmpty) {
+                    await updateHighScore(username, score);
+                    Navigator.of(context).pop();
+                  }
+                },
+                child: const Text('保存'),
+              )
+            else
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showScoreDialog(context);
+    });
     return Scaffold(
       body: Container(
         width: double.infinity,
