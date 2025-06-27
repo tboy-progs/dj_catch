@@ -5,6 +5,8 @@ import 'package:dj_catch/page/result_page.dart';
 import 'package:dj_catch/provider/character_provider.dart';
 import 'package:dj_catch/provider/item_provider.dart';
 import 'package:dj_catch/provider/score_provider.dart';
+import 'package:dj_catch/widget/shining_item_image.dart';
+import 'package:dj_catch/widget/hold_button.dart';
 
 class GamePage extends ConsumerStatefulWidget {
   const GamePage({super.key});
@@ -207,7 +209,7 @@ class _GamePageState extends ConsumerState<GamePage> {
                         alignment: Alignment.center,
                         children: [
                           if (item.type == 4)
-                            _ShiningItemImage(
+                            ShiningItemImage(
                               imagePath: item.imagePath,
                               width:
                                   MediaQuery.of(context).size.width * itemWidth,
@@ -281,13 +283,13 @@ class _GamePageState extends ConsumerState<GamePage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      _buildHoldButton(
+                      HoldButton(
                         icon: Icons.arrow_back,
                         onTapDown: (_) => _startMoveLeft(),
                         onTapUp: (_) => _stopMoveLeft(),
                         onTapCancel: _stopMoveLeft,
                       ),
-                      _buildHoldButton(
+                      HoldButton(
                         icon: Icons.arrow_forward,
                         onTapDown: (_) => _startMoveRight(),
                         onTapUp: (_) => _stopMoveRight(),
@@ -301,97 +303,6 @@ class _GamePageState extends ConsumerState<GamePage> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildHoldButton({
-    required IconData icon,
-    required void Function(TapDownDetails) onTapDown,
-    required void Function(TapUpDetails) onTapUp,
-    required void Function() onTapCancel,
-  }) {
-    return GestureDetector(
-      onTapDown: onTapDown,
-      onTapUp: onTapUp,
-      onTapCancel: onTapCancel,
-      child: ElevatedButton(
-        onPressed: null, // GestureDetectorで制御するためonPressedはnull
-        style: ElevatedButton.styleFrom(
-          shape: const CircleBorder(),
-          padding: const EdgeInsets.all(20),
-          backgroundColor: Colors.deepPurple.withOpacity(0.5),
-          foregroundColor: Colors.white,
-        ),
-        child: Icon(icon, size: 30),
-      ),
-    );
-  }
-}
-
-class _ShiningItemImage extends StatefulWidget {
-  final String imagePath;
-  final double width;
-  final double height;
-  const _ShiningItemImage({
-    required this.imagePath,
-    required this.width,
-    required this.height,
-  });
-
-  @override
-  State<_ShiningItemImage> createState() => _ShiningItemImageState();
-}
-
-class _ShiningItemImageState extends State<_ShiningItemImage>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    )..repeat();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        return ShaderMask(
-          shaderCallback: (Rect bounds) {
-            return LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.white.withOpacity(0.0),
-                Colors.white.withOpacity(0.7),
-                Colors.white.withOpacity(0.0),
-              ],
-              stops: [
-                (_controller.value - 0.2).clamp(0.0, 1.0),
-                _controller.value,
-                (_controller.value + 0.2).clamp(0.0, 1.0),
-              ],
-            ).createShader(bounds);
-          },
-          blendMode: BlendMode.lighten,
-          child: Image.asset(
-            widget.imagePath,
-            width: widget.width,
-            height: widget.height,
-            fit: BoxFit.contain,
-          ),
-        );
-      },
     );
   }
 }
