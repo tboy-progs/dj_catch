@@ -107,7 +107,7 @@ class HomePage extends StatelessWidget {
                 child: SizedBox(
                   width: 300,
                   child: Text(
-                    '落ちてくるジョナスをキャッチしてハイスコアを目指します。5回ジョナスを落とすとゲームオーバーです。ジョナスは5~100点の５種類です。',
+                    '落ちてくるジョナスをキャッチしてハイスコアを目指します。5回ジョナスを落とすとゲームオーバーです。',
                     style: TextStyle(color: Colors.grey[400], fontSize: 16),
                   ),
                 ),

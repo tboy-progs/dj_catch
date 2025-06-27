@@ -9,7 +9,7 @@ class ResultPage extends StatelessWidget {
   Future<Map<String, dynamic>?> fetchHighScore() async {
     final doc = await FirebaseFirestore.instance
         .collection('highscores')
-        .doc('V31RnAACew0KnE6tG9Ms')
+        .doc('global')
         .get();
     return doc.data();
   }
@@ -30,48 +30,51 @@ class ResultPage extends StatelessWidget {
         : '';
     final TextEditingController nameController = TextEditingController();
     bool isNewRecord = score > highScore;
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('スコア結果'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('ハイスコア: $highScore ($highScoreUser)'),
-              Text('今回のスコア: $score'),
-              if (isNewRecord) ...[
-                const SizedBox(height: 16),
-                const Text('新記録！ユーザー名を入力してください'),
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(labelText: 'ユーザー名'),
-                ),
+
+    if (isNewRecord) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('オンライン記録更新！'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('以前のハイスコア: $highScore (ユーザー: $highScoreUser)'),
+                Text('今回のスコア: $score'),
+                if (isNewRecord) ...[
+                  const SizedBox(height: 16),
+                  const Text('スコアを更新します。名前を入力してください。'),
+                  TextField(
+                    controller: nameController,
+                    decoration: const InputDecoration(labelText: 'ユーザー名'),
+                  ),
+                ],
               ],
+            ),
+            actions: [
+              if (isNewRecord)
+                TextButton(
+                  onPressed: () async {
+                    final username = nameController.text.trim();
+                    if (username.isNotEmpty) {
+                      await updateHighScore(username, score);
+                      Navigator.of(context).pop();
+                    }
+                  },
+                  child: const Text('保存'),
+                )
+              else
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('OK'),
+                ),
             ],
-          ),
-          actions: [
-            if (isNewRecord)
-              TextButton(
-                onPressed: () async {
-                  final username = nameController.text.trim();
-                  if (username.isNotEmpty) {
-                    await updateHighScore(username, score);
-                    Navigator.of(context).pop();
-                  }
-                },
-                child: const Text('保存'),
-              )
-            else
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('OK'),
-              ),
-          ],
-        );
-      },
-    );
+          );
+        },
+      );
+    }
   }
 
   @override
